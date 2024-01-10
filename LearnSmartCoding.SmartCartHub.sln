@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F2FDB594-652D-4F69-A5A3-955512326004}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{D59548D6-C0FA-48C4-B5BE-C0BD2F980408}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Product", "Product", "{1283C7D0-C3EA-4FE2-9ABD-697A48469854}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products.Web", "LearnSmartCoding.SmartCartHub\src\Services\Product\Product.Web\Products.Web.csproj", "{E20CC828-6E74-4880-AC4C-1205EE6CDFD5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products.Core", "LearnSmartCoding.SmartCartHub\src\Services\Product\Products.Core\Products.Core.csproj", "{57205F25-351D-4944-AED0-AD10BE04E0BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products.Service", "LearnSmartCoding.SmartCartHub\src\Services\Product\Products.Service\Products.Service.csproj", "{A4317A33-4815-427B-A390-B1C960E43F7F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products.Data", "LearnSmartCoding.SmartCartHub\src\Services\Product\Products.Data\Products.Data.csproj", "{84205445-03FD-4C9B-8607-B2AB1B5AF0E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E20CC828-6E74-4880-AC4C-1205EE6CDFD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E20CC828-6E74-4880-AC4C-1205EE6CDFD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E20CC828-6E74-4880-AC4C-1205EE6CDFD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E20CC828-6E74-4880-AC4C-1205EE6CDFD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57205F25-351D-4944-AED0-AD10BE04E0BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57205F25-351D-4944-AED0-AD10BE04E0BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57205F25-351D-4944-AED0-AD10BE04E0BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57205F25-351D-4944-AED0-AD10BE04E0BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4317A33-4815-427B-A390-B1C960E43F7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4317A33-4815-427B-A390-B1C960E43F7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4317A33-4815-427B-A390-B1C960E43F7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4317A33-4815-427B-A390-B1C960E43F7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84205445-03FD-4C9B-8607-B2AB1B5AF0E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84205445-03FD-4C9B-8607-B2AB1B5AF0E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84205445-03FD-4C9B-8607-B2AB1B5AF0E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84205445-03FD-4C9B-8607-B2AB1B5AF0E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D59548D6-C0FA-48C4-B5BE-C0BD2F980408} = {F2FDB594-652D-4F69-A5A3-955512326004}
+		{1283C7D0-C3EA-4FE2-9ABD-697A48469854} = {D59548D6-C0FA-48C4-B5BE-C0BD2F980408}
+		{E20CC828-6E74-4880-AC4C-1205EE6CDFD5} = {1283C7D0-C3EA-4FE2-9ABD-697A48469854}
+		{57205F25-351D-4944-AED0-AD10BE04E0BD} = {1283C7D0-C3EA-4FE2-9ABD-697A48469854}
+		{A4317A33-4815-427B-A390-B1C960E43F7F} = {1283C7D0-C3EA-4FE2-9ABD-697A48469854}
+		{84205445-03FD-4C9B-8607-B2AB1B5AF0E1} = {1283C7D0-C3EA-4FE2-9ABD-697A48469854}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F96521B6-C05E-4830-8071-03D47B8B8E5B}
+	EndGlobalSection
+EndGlobal
