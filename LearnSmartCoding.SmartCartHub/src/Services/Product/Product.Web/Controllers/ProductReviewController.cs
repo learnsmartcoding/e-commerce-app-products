@@ -29,7 +29,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpGet("product/{productId}")]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetReviewsByProductIdAsync(int productId)
         {
             var reviews = await _productReviewService.GetReviewsByProductIdAsync(productId);
@@ -37,7 +37,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpPost]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> AddReviewAsync([FromBody] ProductReviewModel reviewModel)
         {
             if (!ModelState.IsValid)
@@ -53,7 +53,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpPut]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> UpdateReviewAsync([FromBody] ProductReviewModel reviewModel)
         {
             if (!ModelState.IsValid)
@@ -74,7 +74,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpDelete("{reviewId}")]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> DeleteReviewAsync(int reviewId)
         {
             var isDeleted = await _productReviewService.DeleteReviewAsync(reviewId);

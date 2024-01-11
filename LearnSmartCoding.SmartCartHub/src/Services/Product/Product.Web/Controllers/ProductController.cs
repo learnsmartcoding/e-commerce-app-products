@@ -28,7 +28,7 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetProductById(int productId)
         {
             var product = await _productService.GetProductByIdAsync(productId);
@@ -44,7 +44,7 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetAllProducts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string sortBy = "ProductName")
         {
             var products = await _productService.GetAllProductsAsync(pageNumber, pageSize, sortBy);
@@ -59,7 +59,7 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> AddProduct([FromBody] CreateProduct productModel)
         {
             if (productModel.ProductImages != null)
@@ -108,7 +108,7 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> UpdateProduct(int productId, [FromBody] UpdateProduct productModel)
         {
             if (productId != productModel.ProductId)
@@ -161,7 +161,7 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             var success = await _productService.DeleteProductAsync(productId);
@@ -192,7 +192,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpGet("images/{imageId}")]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetProductImageByIdAsync(int imageId)
         {
             var image = await _productService.GetProductImageByIdAsync(imageId);
@@ -205,7 +205,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpGet("{productId}/images")]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetImagesByProductIdAsync(int productId)
         {
             var images = await _productService.GetImagesByProductIdAsync(productId);
@@ -213,7 +213,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpPost("{productId}/images")]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> AddProductImageAsync(int productId, [FromBody] ProductImageModel imageModel)
         {
             if (!ModelState.IsValid)
@@ -226,7 +226,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpDelete("images/{imageId}")]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> DeleteProductImageAsync(int imageId)
         {
             var isDeleted = await _productService.DeleteProductImageAsync(imageId);
