@@ -41,8 +41,7 @@ namespace Products.Web.Common
 
         public string GetCurrentUserId()
         {
-            return "f1de6a40-f843-4b71-8adf-cb58ebe2307a";//Temp value based on db
-            //return GetClaimInfo("objectidentifier");
+            return GetClaimInfo("objectidentifier");
         }
     }
 }

@@ -8,14 +8,11 @@ namespace Products.Web.Controllers
 {
     [ApiController]
     [Route("api/products")]
-    public class ProductController : ControllerBase
+    public class ProductsController(IProductService productService, 
+        IStorageService storageService) : ControllerBase
     {
-        private readonly IProductService _productService;
-
-        public ProductController(IProductService productService)
-        {
-            _productService = productService;
-        }
+        private readonly IProductService _productService = productService;
+        private readonly IStorageService storageService = storageService;
 
         /// <summary>
         /// Get a product by its ID.
@@ -28,7 +25,7 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetProductById(int productId)
         {
             var product = await _productService.GetProductByIdAsync(productId);
@@ -44,14 +41,14 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetAllProducts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string sortBy = "ProductName")
         {
             var products = await _productService.GetAllProductsAsync(pageNumber, pageSize, sortBy);
             return Ok(products);//returns at least empty arrary if no products exist
         }
 
-        [HttpPost]
+        [HttpPost(Name = "AddProduct")]
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ProductModel))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -59,12 +56,12 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
-        public async Task<IActionResult> AddProduct([FromBody] CreateProduct productModel)
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        public async Task<IActionResult> AddProduct(CreateProduct productModel )
         {
-            if (productModel.ProductImages != null)
+            if (productModel.Images != null)
             {
-                foreach (var file in productModel.ProductImages)
+                foreach (var file in productModel.Images)
                 {
                     if (!IsValidFile(file))
                     {
@@ -77,28 +74,38 @@ namespace Products.Web.Controllers
             var product = MapToProduct(productModel);
 
 
-            if (productModel.ProductImages != null)
+            if (productModel.Images != null)
             {
                 //Change this to store it in Azure Blob storage
-                foreach (var file in productModel.ProductImages)
+                foreach (var file in productModel.Images)
                 {
-                    // Construct the file name based on productId and productName
-                    var fileName = $"{productModel.ProductId}_{productModel.ProductName.Replace(" ", "_")}";
+                    var fileName = $"{productModel.CategoryId}_{productModel.ProductName.Replace(" ", "_")}.{file.FileName.Split('.').LastOrDefault()}";
+                    var filePath = "";
 
-                    // Example: Save the file to a server directory
-                    var filePath = Path.Combine("path/to/uploaded/files", fileName);
+                    //we try to upload to azure storage, if that is not configured then it will upload to local folder
 
-                    using (var stream = System.IO.File.Create(filePath))
+                    using (var stream = file.OpenReadStream())
                     {
-                        await file.CopyToAsync(stream);
+                        var containerName = "products";
+                        var folderName = "images";
+                        filePath = await storageService.UploadImageAsync(stream, containerName, folderName, fileName);
                     }
+
+                    if (string.IsNullOrEmpty(filePath))
+                    {
+                        filePath = await UploadFileToLocalMachineAsync(fileName, file);
+                        //filePath = await UploadFileToProjectLocationAsync(fileName, file); //you can use any one of these to store file
+                    }
+
                     product?.ProductImages?.Add(new ProductImageModel() { ImageUrl = filePath });
                 }
             }
             var addedProduct = await _productService.AddProductAsync(product);
 
             return CreatedAtAction(nameof(GetProductById), new { productId = addedProduct.ProductId }, addedProduct);
-        }        
+        }
+
+
 
         [HttpPut("{productId}")]
         [Consumes("multipart/form-data")]
@@ -108,8 +115,8 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
-        public async Task<IActionResult> UpdateProduct(int productId, [FromBody] UpdateProduct productModel)
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        public async Task<IActionResult> UpdateProduct(int productId, UpdateProduct productModel)
         {
             if (productId != productModel.ProductId)
             {
@@ -117,9 +124,9 @@ namespace Products.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (productModel.ProductImages != null)
+            if (productModel.Images != null)
             {
-                foreach (var file in productModel.ProductImages)
+                foreach (var file in productModel.Images)
                 {
                     if (!IsValidFile(file))
                     {
@@ -132,21 +139,29 @@ namespace Products.Web.Controllers
             var product = MapToProduct(productModel);
 
 
-            if (productModel.ProductImages != null)
+            if (productModel.Images != null)
             {
                 //Change this to store it in Azure Blob storage
-                foreach (var file in productModel.ProductImages)
+                foreach (var file in productModel.Images)
                 {
-                    // Construct the file name based on productId and productName
-                    var fileName = $"{productModel.ProductId}_{productModel.ProductName.Replace(" ", "_")}";
+                    var fileName = $"{productModel.CategoryId}_{productModel.ProductName.Replace(" ", "_")}.{file.FileName.Split('.').LastOrDefault()}";
+                    var filePath = "";
 
-                    // Example: Save the file to a server directory
-                    var filePath = Path.Combine("path/to/uploaded/files", fileName);
+                    //we try to upload to azure storage, if that is not configured then it will upload to local folder
 
-                    using (var stream = System.IO.File.Create(filePath))
+                    using (var stream = file.OpenReadStream())
                     {
-                        await file.CopyToAsync(stream);
+                        var containerName = "products";
+                        var folderName = "images";
+                        filePath = await storageService.UploadImageAsync(stream, containerName, folderName, fileName);
                     }
+
+                    if (string.IsNullOrEmpty(filePath))
+                    {
+                        filePath = await UploadFileToLocalMachineAsync(fileName, file);
+                        //filePath = await UploadFileToProjectLocationAsync(fileName, file); //you can use any one of these to store file
+                    }
+
                     product?.ProductImages?.Add(new ProductImageModel() { ImageUrl = filePath });
                 }
             }
@@ -161,7 +176,7 @@ namespace Products.Web.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             var success = await _productService.DeleteProductAsync(productId);
@@ -192,7 +207,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpGet("images/{imageId}")]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetProductImageByIdAsync(int imageId)
         {
             var image = await _productService.GetProductImageByIdAsync(imageId);
@@ -205,7 +220,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpGet("{productId}/images")]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
         public async Task<IActionResult> GetImagesByProductIdAsync(int productId)
         {
             var images = await _productService.GetImagesByProductIdAsync(productId);
@@ -213,7 +228,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpPost("{productId}/images")]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> AddProductImageAsync(int productId, [FromBody] ProductImageModel imageModel)
         {
             if (!ModelState.IsValid)
@@ -226,7 +241,7 @@ namespace Products.Web.Controllers
         }
 
         [HttpDelete("images/{imageId}")]
-        //[RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
+        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Write")]
         public async Task<IActionResult> DeleteProductImageAsync(int imageId)
         {
             var isDeleted = await _productService.DeleteProductImageAsync(imageId);
@@ -237,6 +252,50 @@ namespace Products.Web.Controllers
 
             return NotFound();
         }
+
+
+        #region Private Methods
+        private async Task<string> UploadFileToLocalMachineAsync(string fileName, IFormFile file)
+        {
+            var tempFolderPath = Path.GetTempPath();
+            // Construct the file name based on productId and productName
+            var folderPath = Path.Combine(tempFolderPath, "SmartCartHub");   
+
+            // Create the folder if it doesn't exist
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            var filePath = Path.Combine(folderPath, fileName);
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return filePath;
+        }
+
+        private async Task<string> UploadFileToProjectLocationAsync(string fileName, IFormFile file)
+        {
+            // Construct the file name based on productId and productName
+
+            // Example: Save the file to a server directory
+            var folderPath = Path.Combine("uploaded/products/images");
+
+            // Create the folder if it doesn't exist
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            var filePath = Path.Combine(folderPath, fileName);
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return filePath;
+        }
+        #endregion
     }
 
 }
