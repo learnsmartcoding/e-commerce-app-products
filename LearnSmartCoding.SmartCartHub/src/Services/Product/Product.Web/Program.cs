@@ -147,7 +147,7 @@ namespace Products.Web
                 builder.Services.AddTransient<ResponseBodyLoggingMiddleware>();
 
                 // Bind Azure Blob Storage configuration from appsettings.json
-                builder.Services.Configure<AzureBlobStorageConfiguration>(configuration.GetSection("AzureBlobStorage"));
+                builder.Services.Configure<AzureBlobStorageConfiguration>(configuration.GetSection("AzureBS"));
 
                 // Register the IStorageService with Azure Blob Storage configuration
                 builder.Services.AddScoped<IStorageService, StorageService>
